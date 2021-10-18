@@ -1,0 +1,40 @@
+---
+- name: Configuration ntp
+  hosts: 192.168.0.10
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars_prompt:
+    - name: USERNAME
+      prompt: Username
+      private: no
+    - name: DEVICE_PASSWORD
+      prompt: Password
+      private: yes
+
+  tasks:
+    - name: Configure NTP
+      juniper_junos_config:
+        user: "{{ USERNAME }}"
+        passwd: "{{ DEVICE_PASSWORD }}"
+        config_mode: exclusive
+        load: replace
+        lines:
+          - <configuration>
+          -        <system>
+          -            <ntp replace="replace">
+          -                <server>
+          -                    <name>{{ ntp_server }}</name>
+          -                </server>
+          -            </ntp>
+          -        </system>
+          - </configuration>
+        format: xml
+        commit: true
+      register: response
+
+    - name: Printe commited interface configuration
+      debug:
+        var: response.diff_lines

@@ -1,0 +1,28 @@
+---
+- name: Retrieve commited interface configuration
+  hosts: 192.168.0.10
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars_prompt:
+    - name: USERNAME 
+      prompt: Username
+      private: no
+    - name: DEVICE_PASSWORD
+      prompt: Password
+      private: yes
+
+  tasks:
+    - name: Retrieve commited interface configuration
+      juniper_junos_config:
+        user: "{{ USERNAME }}"
+        passwd: "{{ DEVICE_PASSWORD }}"
+        retrieve: committed
+        filter: interfaces
+      register: response
+
+    - name: Printe commited interface configuration
+      debug:
+        var: response.config_lines

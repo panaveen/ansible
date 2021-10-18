@@ -1,0 +1,32 @@
+---
+- name: Junos config using set
+  hosts: 192.168.0.10
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars_prompt:
+    - name: USERNAME
+      prompt: Username
+      private: no
+    - name: DEVICE_PASSWORD
+      prompt: Password
+      private: yes
+
+  tasks:
+  - name: Configuring banner
+    juniper_junos_config:
+      user: "{{ USERNAME }}"
+      passwd: "{{ DEVICE_PASSWORD }}"
+      load: set
+      format: set
+      config_mode: exclusive
+      commit: true
+      lines:
+        - set system login message "\n\n Provisioned by Ansible\n\n"
+    register: set_conf_response
+
+  - name: Print Junos facts
+    debug:
+      var: set_conf_response.diff_lines

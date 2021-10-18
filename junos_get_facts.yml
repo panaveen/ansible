@@ -1,0 +1,27 @@
+---
+- name: test
+  hosts: 192.168.0.101
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars_prompt:
+    - name: USERNAME
+      prompt: Username
+      private: no
+    - name: DEVICE_PASSWORD
+      prompt: Password
+      private: yes
+
+  tasks:
+  - name: Get Junos Device info
+    juniper_junos_facts:
+      user: "{{ USERNAME }}"
+      passwd: "{{ DEVICE_PASSWORD }}"
+    register: juniper_facts 
+
+  - name: Print Junos facts 
+    debug:
+      #msg: "{{ juniper_facts }}"
+      var: juniper_facts.facts.version

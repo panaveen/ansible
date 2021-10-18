@@ -1,0 +1,28 @@
+---
+- name: Issue Junos RPC
+  hosts: 192.168.0.101
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars_prompt:
+    - name: USERNAME
+      prompt: Username
+      private: no
+    - name: DEVICE_PASSWORD
+      prompt: Password
+      private: yes
+
+  tasks:
+  - name: Issue Junos RPC
+    juniper_junos_rpc:
+      user: "{{ USERNAME }}"
+      passwd: "{{ DEVICE_PASSWORD }}"
+      rpcs: get-software-information
+    register: rpc_response
+
+  - name: Print Junos facts
+    debug:
+      #msg: "{{ juniper_facts }}"
+      var: rpc_response["parsed_output"]["multi-routing-engine-results"]["multi-routing-engine-item"]["software-information"]["junos-version"]

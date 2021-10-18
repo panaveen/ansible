@@ -1,0 +1,23 @@
+---
+- name: Issue Junos RPC
+  hosts: 192.168.0.101
+  connection: local
+  gather_facts: no
+
+  vars_prompt:
+    - name: USERNAME
+      prompt: Username
+      private: no
+    - name: DEVICE_PASSWORD
+      prompt: Password
+      private: yes
+
+  tasks:
+  - name: Get ARP information using Junos PyEZ Table
+    juniper.device.table:        
+      file: "arp.yml"
+    register: result
+
+  - name: Print response
+    debug:
+      var: result
