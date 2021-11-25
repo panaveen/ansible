@@ -1,0 +1,29 @@
+---
+- name: Retrieve Interface information
+  hosts: 192.168.0.100
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars_prompt:
+    - name: USERNAME
+      prompt: Username
+      private: no
+    - name: DEVICE_PASSWORD
+      prompt: Password
+      private: yes
+
+  tasks:
+  - name: Retrieve Interface information
+    juniper_junos_command:
+      user: "{{ USERNAME }}"
+      passwd: "{{ DEVICE_PASSWORD }}"
+      commands: 
+        - show bgp summ
+    register: cmd_output
+
+  - name: Print results
+    debug:
+      #msg: "{{ juniper_facts }}"
+      msg: "{{ cmd_output.stdout_lines }}"
